@@ -52,22 +52,31 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
+  const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      <NavBar />
-      <MainContent />
+      <NavBar>
+        <Search />
+        <NumResult movies={movies} />
+      </NavBar>
+
+      <MainContent>
+        <ListMovie>
+          <MovieList movies={movies} />
+        </ListMovie>
+        <WatchedMovies />
+      </MainContent>
     </>
   );
 }
 
-function NavBar() {
+function NavBar({ children }) {
   return (
     <nav className="nav-bar">
       <Logo />
-      <Search />
-      <NumResult />
+      {children}
     </nav>
-  );
+  ); //component composition fix prop drilling
 }
 
 function Logo() {
@@ -92,8 +101,7 @@ function Search() {
   );
 }
 
-function NumResult() {
-  const [movies, setMovies] = useState(tempMovieData);
+function NumResult({ movies }) {
   return (
     <p className="num-results">
       Found <strong>{movies.length}</strong> results
@@ -101,16 +109,11 @@ function NumResult() {
   );
 }
 
-function MainContent() {
-  return (
-    <main className="main">
-      <ListMovie />
-      <WatchedMovies />
-    </main>
-  );
+function MainContent({ children }) {
+  return <main className="main">{children}</main>;
 }
 
-function ListMovie() {
+function ListMovie({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
 
   return (
@@ -121,13 +124,12 @@ function ListMovie() {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && <MovieList />}
+      {isOpen1 && children}
     </div>
   );
 }
 
-function MovieList() {
-  const [movies, setMovies] = useState(tempMovieData);
+function MovieList({ movies }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
